@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Get Current Location</title>
+</head>
+<body>
+	<button >Get Location</button>
+	<script>
+		const button = document.querySelector("button");
+
+button.addEventListener('click', () => {
+    navigator.geolocation.getCurrentPosition(position => {
+        const { latitude, longitude } = position.coords;
+        const url = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`;
+
+        fetch(url)
+            .then(res => res.json())
+            .then(data => {
+                // Create an HTML table
+                const table = document.createElement('table');
+                const tbody = document.createElement('tbody');
+
+                // Loop through the data.address object and create a new row for each key-value pair
+                for (const [key, value] of Object.entries(data.address)) {
+                    const row = document.createElement('tr');
+                    const keyCell = document.createElement('td');
+                    const valueCell = document.createElement('td');
+
+                    keyCell.textContent = key;
+                    valueCell.textContent = value;
+
+                    row.appendChild(keyCell);
+                    row.appendChild(valueCell);
+                    tbody.appendChild(row);
+                }
+
+                table.appendChild(tbody);
+
+                // Append the table to the body of the HTML document
+                document.body.appendChild(table);
+            })
+            .catch(() => {
+                console.log("Error fetching data from API");
+            });
+    });
+});
+
+	</script>
+</body>
+</html>
+
